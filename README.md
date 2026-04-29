@@ -34,6 +34,7 @@ This skill adds a browser page at:
 ## What Is Included
 
 - a SQL workspace page at `dashboards/index`
+- the matching ajax request handlers under `dashboards/ajax/`
 - a database support report under `docs/database-support.md`
 - Docker-only regression tests for copy integrity and browser layout smoke coverage
 
@@ -138,6 +139,7 @@ If DD is not running, the browser route will not load until `dashboard restart` 
 - `docs/changes/2026-04-29-documentation-refresh.md`
 - `docs/changes/2026-04-29-readme-screenshots.md`
 - `docs/changes/2026-04-29-sqlite-demo-screenshots.md`
+- `docs/changes/2026-04-29-ajax-workers-restored.md`
 - `docs/images/sql-dashboard-profiles.png`
 - `docs/images/sql-dashboard-workspace.png`
 - `docs/images/sql-dashboard-schema.png`

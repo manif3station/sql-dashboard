@@ -1,0 +1,361 @@
+use Developer::Dashboard::Folder ();
+use Developer::Dashboard::JSON qw(json_encode json_decode);
+use File::Path qw(make_path);
+use File::Spec;
+
+sub sql_dashboard_trim {
+    my ($text) = @_;
+    $text = '' if !defined $text;
+    $text =~ s/^\s+//;
+    $text =~ s/\s+\z//;
+    return $text;
+}
+
+sub sql_dashboard_escape_html {
+    my ($text) = @_;
+    $text = '' if !defined $text;
+    $text =~ s/&/&amp;/g;
+    $text =~ s/</&lt;/g;
+    $text =~ s/>/&gt;/g;
+    $text =~ s/"/&quot;/g;
+    return $text;
+}
+
+# sql_dashboard_connection_id($dsn, $user)
+# Purpose: build the shareable sql-dashboard connection id from DSN and user without exposing the password.
+# Input: DSN string and database username string.
+# Output: connection id string in the form "dsn|user".
+sub sql_dashboard_connection_id {
+    my ( $dsn, $user ) = @_;
+    $dsn  = sql_dashboard_trim($dsn);
+    $user = sql_dashboard_trim($user);
+    return '' if $dsn eq '';
+    return $dsn . '|' . $user;
+}
+
+# sql_dashboard_parse_connection_id($connection_id)
+# Purpose: recover DSN, user, and inferred driver details from one shareable sql-dashboard connection id.
+# Input: connection id string in the form "dsn|user".
+# Output: hash reference with connection_id, dsn, user, and driver keys or undef for invalid input.
+sub sql_dashboard_parse_connection_id {
+    my ($connection_id) = @_;
+    $connection_id = sql_dashboard_trim($connection_id);
+    return undef if $connection_id eq '' || $connection_id !~ /\A(.+)\|(.*)\z/;
+    my ( $dsn, $user ) = ( $1, $2 );
+    return undef if $dsn eq '';
+    my $driver = '';
+    if ( $dsn =~ /\Adbi:([^:]+):/i ) {
+        $driver = 'DBD::' . $1;
+    }
+    return {
+        connection_id => $connection_id,
+        dsn           => $dsn,
+        user          => $user,
+        driver        => $driver,
+    };
+}
+
+# sql_dashboard_secure_dir($dir)
+# Purpose: ensure the sql-dashboard profile directory exists and is owner-only.
+# Input: absolute directory path for the sql-dashboard profile store.
+# Output: the same directory path after it has been created/tightened to 0700.
+sub sql_dashboard_secure_dir {
+    my ($dir) = @_;
+    make_path( $dir, { mode => 0700 } ) if !-d $dir;
+    chmod 0700, $dir or die "Unable to chmod $dir to 0700: $!";
+    return $dir;
+}
+
+# sql_dashboard_secure_file($path)
+# Purpose: tighten one existing sql-dashboard profile file to owner-only mode.
+# Input: absolute file path for a saved sql-dashboard profile json file.
+# Output: the same file path after it has been tightened to 0600.
+sub sql_dashboard_secure_file {
+    my ($path) = @_;
+    return $path if !-e $path;
+    chmod 0600, $path or die "Unable to chmod $path to 0600: $!";
+    return $path;
+}
+
+sub sql_dashboard_profile_dir {
+    my $dir = File::Spec->catdir( Developer::Dashboard::Folder->configs, 'sql-dashboard' );
+    return sql_dashboard_secure_dir($dir);
+}
+
+sub sql_dashboard_profile_filename {
+    my ($name) = @_;
+    $name = sql_dashboard_trim($name);
+    die "Missing profile name\n" if $name eq '';
+    die "Invalid profile name\n" if $name =~ /[[:cntrl:]]/;
+    $name =~ s{[\\/]+}{_}g;
+    return $name . '.json';
+}
+
+sub sql_dashboard_profile_path {
+    my ($name) = @_;
+    return File::Spec->catfile( sql_dashboard_profile_dir(), sql_dashboard_profile_filename($name) );
+}
+
+# sql_dashboard_collection_dir()
+# Purpose: resolve and secure the sql-dashboard collection directory used for saved SQL collections.
+# Input: none.
+# Output: absolute collection directory path with 0700 permissions enforced.
+sub sql_dashboard_collection_dir {
+    my $dir = File::Spec->catdir( sql_dashboard_profile_dir(), 'collections' );
+    return sql_dashboard_secure_dir($dir);
+}
+
+# sql_dashboard_collection_filename($name)
+# Purpose: turn one sql-dashboard collection name into a safe JSON filename.
+# Input: collection name string.
+# Output: filename string ending in .json.
+sub sql_dashboard_collection_filename {
+    my ($name) = @_;
+    $name = sql_dashboard_trim($name);
+    die "Missing collection name\n" if $name eq '';
+    die "Invalid collection name\n" if $name =~ /[[:cntrl:]]/;
+    $name =~ s{[\\/]+}{_}g;
+    return $name . '.json';
+}
+
+# sql_dashboard_collection_path($name)
+# Purpose: resolve one sql-dashboard collection JSON path on disk.
+# Input: collection name string.
+# Output: absolute collection JSON file path.
+sub sql_dashboard_collection_path {
+    my ($name) = @_;
+    return File::Spec->catfile( sql_dashboard_collection_dir(), sql_dashboard_collection_filename($name) );
+}
+
+# sql_dashboard_normalize_profile($profile)
+# Purpose: enrich one sql-dashboard profile hash with the portable connection id used in share URLs.
+# Input: profile hash reference.
+# Output: normalized profile hash reference.
+sub sql_dashboard_normalize_profile {
+    my ($profile) = @_;
+    die "Profile must be a hash reference\n" if ref($profile) ne 'HASH';
+    $profile->{name}          = sql_dashboard_trim( $profile->{name} );
+    $profile->{driver}        = sql_dashboard_trim( $profile->{driver} );
+    $profile->{dsn}           = sql_dashboard_trim( $profile->{dsn} );
+    $profile->{user}          = sql_dashboard_trim( $profile->{user} );
+    $profile->{attrs_json}    = sql_dashboard_trim( $profile->{attrs_json} );
+    $profile->{save_password} = $profile->{save_password} ? 1 : 0;
+    $profile->{password}      = '' if !defined $profile->{password};
+    $profile->{connection_id} = sql_dashboard_connection_id( $profile->{dsn}, $profile->{user} );
+    return $profile;
+}
+
+sub sql_dashboard_decode_profile_payload {
+    my ($json_text) = @_;
+    die "Missing profile payload\n" if !defined $json_text || $json_text eq '';
+    my $profile = json_decode($json_text);
+    die "Profile payload must be a JSON object\n" if ref($profile) ne 'HASH';
+    $profile->{name}          = sql_dashboard_trim( $profile->{name} );
+    $profile->{driver}        = sql_dashboard_trim( $profile->{driver} );
+    $profile->{dsn}           = sql_dashboard_trim( $profile->{dsn} );
+    $profile->{user}          = sql_dashboard_trim( $profile->{user} );
+    $profile->{attrs_json}    = sql_dashboard_trim( $profile->{attrs_json} );
+    $profile->{password}      = defined $profile->{password} ? $profile->{password} : '';
+    $profile->{save_password} = $profile->{save_password} ? 1 : 0;
+    die "Missing profile name\n" if $profile->{name} eq '';
+    die "Missing driver module\n" if $profile->{driver} eq '';
+    die "Missing DSN\n" if $profile->{dsn} eq '';
+    if ( $profile->{attrs_json} ne '' ) {
+        my $attrs = json_decode( $profile->{attrs_json} );
+        die "DBI attrs_json must decode to a JSON object\n" if ref($attrs) ne 'HASH';
+    }
+    if ( !$profile->{save_password} ) {
+        delete $profile->{password};
+    }
+    return sql_dashboard_normalize_profile($profile);
+}
+
+# sql_dashboard_decode_collection_payload($json_text)
+# Purpose: validate and normalize one sql-dashboard SQL collection payload from the browser.
+# Input: JSON text string containing collection metadata and SQL items.
+# Output: normalized collection hash reference.
+sub sql_dashboard_decode_collection_payload {
+    my ($json_text) = @_;
+    die "Missing collection payload\n" if !defined $json_text || $json_text eq '';
+    my $collection = json_decode($json_text);
+    die "Collection payload must be a JSON object\n" if ref($collection) ne 'HASH';
+    $collection->{name} = sql_dashboard_trim( $collection->{name} );
+    die "Missing collection name\n" if $collection->{name} eq '';
+    die "Collection items must be an array\n" if ref( $collection->{items} ) ne 'ARRAY';
+    my @items;
+    for my $item ( @{ $collection->{items} } ) {
+        die "Collection item must be a JSON object\n" if ref($item) ne 'HASH';
+        my $name = sql_dashboard_trim( $item->{name} );
+        my $id   = sql_dashboard_trim( $item->{id} );
+        my $sql  = defined $item->{sql} ? $item->{sql} : '';
+        die "Missing collection item name\n" if $name eq '';
+        if ( $id eq '' ) {
+            $id = lc($name);
+            $id =~ s/[^a-z0-9]+/-/g;
+            $id =~ s/^-+|-+\z//g;
+            $id = 'sql-item' if $id eq '';
+        }
+        push @items, {
+            id   => $id,
+            name => $name,
+            sql  => $sql,
+        };
+    }
+    @items = sort { ( $a->{name} || '' ) cmp ( $b->{name} || '' ) } @items;
+    $collection->{items} = \@items;
+    return $collection;
+}
+
+sub sql_dashboard_read_profile {
+    my ($name) = @_;
+    my $path = sql_dashboard_profile_path($name);
+    sql_dashboard_secure_file($path);
+    open my $fh, '<', $path or die "Unable to read $path: $!";
+    local $/;
+    my $json_text = <$fh>;
+    close $fh or die "Unable to close $path: $!";
+    my $profile = json_decode($json_text);
+    die "Invalid sql-dashboard profile file $path\n" if ref($profile) ne 'HASH';
+    return sql_dashboard_normalize_profile($profile);
+}
+
+# sql_dashboard_read_collection($name)
+# Purpose: read one saved sql-dashboard collection JSON file from disk.
+# Input: collection name string.
+# Output: normalized collection hash reference.
+sub sql_dashboard_read_collection {
+    my ($name) = @_;
+    my $path = sql_dashboard_collection_path($name);
+    sql_dashboard_secure_file($path);
+    open my $fh, '<', $path or die "Unable to read $path: $!";
+    local $/;
+    my $json_text = <$fh>;
+    close $fh or die "Unable to close $path: $!";
+    return sql_dashboard_decode_collection_payload($json_text);
+}
+
+sub sql_dashboard_list_profiles {
+    my @profiles;
+    my @errors;
+    my $dir = sql_dashboard_profile_dir();
+    opendir my $dh, $dir or die "Unable to read $dir: $!";
+    while ( my $entry = readdir $dh ) {
+        next if $entry eq '.' || $entry eq '..';
+        next if $entry !~ /\.json\z/;
+        my $path = File::Spec->catfile( $dir, $entry );
+        next if !-f $path;
+        eval {
+            sql_dashboard_secure_file($path);
+            open my $fh, '<', $path or die "Unable to read $path: $!";
+            local $/;
+            my $json_text = <$fh>;
+            close $fh or die "Unable to close $path: $!";
+            my $profile = json_decode($json_text);
+            die "Profile file $path did not decode to a JSON object\n" if ref($profile) ne 'HASH';
+            push @profiles, sql_dashboard_normalize_profile($profile);
+            1;
+        } or do {
+            my $error = $@ || "Unable to read $path\n";
+            $error =~ s/\s+\z//;
+            push @errors, $error;
+        };
+    }
+    closedir $dh or die "Unable to close $dir: $!";
+    @profiles = sort { ( $a->{name} || '' ) cmp ( $b->{name} || '' ) } @profiles;
+    return ( \@profiles, \@errors );
+}
+
+# sql_dashboard_list_collections()
+# Purpose: read every saved sql-dashboard collection from disk and surface any parse failures.
+# Input: none.
+# Output: array reference of normalized collections and array reference of read errors.
+sub sql_dashboard_list_collections {
+    my @collections;
+    my @errors;
+    my $dir = sql_dashboard_collection_dir();
+    opendir my $dh, $dir or die "Unable to read $dir: $!";
+    while ( my $entry = readdir $dh ) {
+        next if $entry eq '.' || $entry eq '..';
+        next if $entry !~ /\.json\z/;
+        my $path = File::Spec->catfile( $dir, $entry );
+        next if !-f $path;
+        eval {
+            sql_dashboard_secure_file($path);
+            open my $fh, '<', $path or die "Unable to read $path: $!";
+            local $/;
+            my $json_text = <$fh>;
+            close $fh or die "Unable to close $path: $!";
+            push @collections, sql_dashboard_decode_collection_payload($json_text);
+            1;
+        } or do {
+            my $error = $@ || "Unable to read $path\n";
+            $error =~ s/\s+\z//;
+            push @errors, $error;
+        };
+    }
+    closedir $dh or die "Unable to close $dir: $!";
+    @collections = sort { ( $a->{name} || '' ) cmp ( $b->{name} || '' ) } @collections;
+    return ( \@collections, \@errors );
+}
+
+# sql_dashboard_list_drivers()
+# Purpose: discover installed DBD::* modules visible to the sql-dashboard bookmark worker.
+# Input: none.
+# Output: array reference of sorted DBD::* module names.
+sub sql_dashboard_list_drivers {
+    my %drivers;
+    for my $inc (@INC) {
+        next if !defined $inc || ref($inc);
+        my $dir = File::Spec->catdir( $inc, 'DBD' );
+        next if !-d $dir;
+        opendir my $dh, $dir or next;
+        while ( my $entry = readdir $dh ) {
+            next if $entry !~ /\A([A-Za-z_][A-Za-z0-9_]*)\.pm\z/;
+            $drivers{ 'DBD::' . $1 } = 1;
+        }
+        closedir $dh;
+    }
+    return [ sort keys %drivers ];
+}
+
+# sql_dashboard_find_profile_by_connection_id($connection_id)
+# Purpose: resolve one shareable sql-dashboard connection id back to a saved local profile when it exists.
+# Input: connection id string.
+# Output: normalized profile hash reference or undef.
+sub sql_dashboard_find_profile_by_connection_id {
+    my ($connection_id) = @_;
+    $connection_id = sql_dashboard_trim($connection_id);
+    return undef if $connection_id eq '';
+    my ( $profiles, undef ) = sql_dashboard_list_profiles();
+    for my $profile ( @{$profiles} ) {
+        return $profile if ( $profile->{connection_id} || '' ) eq $connection_id;
+    }
+    return undef;
+}
+my $payload;
+eval {
+    my $profile = sql_dashboard_decode_profile_payload( params->{profile} );
+    my $original_name = sql_dashboard_trim( params->{original_name} );
+    my $path = sql_dashboard_profile_path( $profile->{name} );
+    if ( $original_name ne '' && $original_name ne $profile->{name} ) {
+        my $original_path = sql_dashboard_profile_path($original_name);
+        unlink $original_path if -f $original_path;
+    }
+    open my $fh, '>', $path or die "Unable to write $path: $!";
+    print {$fh} json_encode($profile);
+    close $fh or die "Unable to close $path: $!";
+    sql_dashboard_secure_file($path);
+    $payload = {
+        ok      => 1,
+        profile => $profile,
+    };
+    1;
+} or do {
+    my $error = $@ || 'Unknown sql-dashboard profile save failure';
+    $error =~ s/\s+\z//;
+    $payload = {
+        ok    => 0,
+        error => $error,
+    };
+};
+print j $payload;

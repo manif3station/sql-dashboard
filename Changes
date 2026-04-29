@@ -1,5 +1,9 @@
 Revision history for sql-dashboard
 
+0.05 2026-04-29
+    - restored the missing `sql-dashboard` ajax worker files under `dashboards/ajax/` so the extracted skill carries its SQL and schema handlers with the page
+    - added Docker verification that the ajax files match the DD source page worker bodies exactly
+
 0.04 2026-04-29
     - replaced README screenshots with a real SQLite-backed demo captured in Docker
     - added a SQLite demo HTML builder for screenshot generation
