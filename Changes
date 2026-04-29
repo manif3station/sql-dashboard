@@ -1,5 +1,10 @@
 Revision history for sql-dashboard
 
+0.04 2026-04-29
+    - replaced README screenshots with a real SQLite-backed demo captured in Docker
+    - added a SQLite demo HTML builder for screenshot generation
+    - added verification for the SQLite demo builder alongside the screenshot asset checks
+
 0.03 2026-04-29
     - added Docker-generated Playwright screenshots for the SQL dashboard README
     - embedded profile, workspace, and schema explorer screenshots into the skill docs

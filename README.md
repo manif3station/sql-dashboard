@@ -75,15 +75,15 @@ The page provides:
 
 ## Screenshots
 
-Connection Profiles keeps saved database connections, driver selection, and DSN guidance together in one place.
+Connection Profiles below is captured from a Docker-generated SQLite demo profile, so the README shows a working local-file setup rather than an empty shell state.
 
 ![SQL Dashboard Connection Profiles](docs/images/sql-dashboard-profiles.png)
 
-SQL Workspace is where the user writes SQL, reuses saved statements, and inspects result output.
+SQL Workspace below shows a saved SQLite query running against a dummy catalog database and returning rows in the result pane.
 
 ![SQL Dashboard Workspace](docs/images/sql-dashboard-workspace.png)
 
-Schema Explorer helps the user browse tables and column metadata before writing a query.
+Schema Explorer below shows the dummy SQLite schema so the user can see how table and column browsing looks in a populated workspace.
 
 ![SQL Dashboard Schema Explorer](docs/images/sql-dashboard-schema.png)
 
@@ -137,6 +137,7 @@ If DD is not running, the browser route will not load until `dashboard restart` 
 - `docs/changes/2026-04-29-extraction.md`
 - `docs/changes/2026-04-29-documentation-refresh.md`
 - `docs/changes/2026-04-29-readme-screenshots.md`
+- `docs/changes/2026-04-29-sqlite-demo-screenshots.md`
 - `docs/images/sql-dashboard-profiles.png`
 - `docs/images/sql-dashboard-workspace.png`
 - `docs/images/sql-dashboard-schema.png`

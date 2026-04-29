@@ -27,11 +27,23 @@ async function main() {
   });
 
   await page.goto(`file://${htmlPath}`, { waitUntil: 'load' });
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(600);
 
   await capture(page, null, `${outputDir}/sql-dashboard-profiles.png`);
-  await capture(page, '[data-sql-main-tab="workspace"]', `${outputDir}/sql-dashboard-workspace.png`);
-  await capture(page, '[data-sql-main-tab="schema"]', `${outputDir}/sql-dashboard-schema.png`);
+
+  await page.click('[data-sql-main-tab="workspace"]');
+  await page.waitForTimeout(250);
+  await page.click('[data-sql-workspace-tab="collections"]');
+  await page.waitForTimeout(250);
+  await page.click('[data-sql-collection-item-link]');
+  await page.waitForTimeout(250);
+  await page.click('#sql-run');
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${outputDir}/sql-dashboard-workspace.png`, fullPage: true });
+
+  await page.click('[data-sql-main-tab="schema"]');
+  await page.waitForTimeout(500);
+  await page.screenshot({ path: `${outputDir}/sql-dashboard-schema.png`, fullPage: true });
 
   await browser.close();
 }
