@@ -1,14 +1,14 @@
 # Overview
 
-`sql-dashboard` is an extracted copy of the current DD SQL dashboard page.
+`sql-dashboard` is a browser workspace for SQL work inside Developer Dashboard.
 
-It exists so the SQL workspace can live as an isolated skill repo with its own release cycle, tests, docs, version metadata, and changelog instead of being reachable only from DD core.
+It exists so database work can stay inside DD while still giving the user practical tools for connection management, query execution, saved SQL, and schema browsing.
 
-The copied page includes:
+The page includes:
 
 - Connection Profiles
 - SQL Workspace
 - Schema Explorer
 - saved Ajax worker definitions for profile bootstrap, profile save, profile delete, collection save, collection delete, SQL execution, and schema browsing
 
-This skill intentionally keeps the browser page source as a copied DD asset. It does not re-implement the SQL dashboard in a separate Perl module.
+In practical terms, the skill helps the user keep profiles, DSN guidance, SQL collections, result handling, and schema inspection together instead of spreading that work across shell history and separate database clients.

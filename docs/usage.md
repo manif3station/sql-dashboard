@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-dashboard skills install git@github.com:manif3station/sql-dashboard.git
+dashboard skills install git@github.mf:manif3station/sql-dashboard.git
 ```
 
 Local workspace install:
@@ -31,10 +31,11 @@ http://127.0.0.1:7890/app/sql-dashboard
 - `Schema Explorer`
 - a driver selector
 - the schema table filter box
+- saved SQL controls next to the active collection
 
 ## Driver Setup
 
-The copied page keeps the DD SQL dashboard behavior: database drivers are still optional and user-installed.
+The workspace stays generic: database drivers are optional and user-installed.
 
 Examples:
 
@@ -49,11 +50,12 @@ dashboard cpan DBD::Oracle
 ## Practical Normal Cases
 
 - install the skill and open `/app/sql-dashboard`
-- review the copied SQL workspace layout before connecting to a real database
-- install one `DBD::*` driver and then use the profile editor against that database family
+- create a profile for one database family and save it for repeat use
+- write and rerun SQL from the workspace editor
+- browse schema metadata before writing a query against a less familiar table set
 
 ## Practical Edge Cases
 
 - if no DBI driver is installed yet, the page still opens because the browser asset is separate from the runtime driver setup
 - if a DB vendor needs native client libraries, install those separately before expecting that driver family to work
-- if the copied page ever drifts from DD core, the exact-copy regression test will fail
+- if the shipped page ever changes, the exact-copy regression test will fail

@@ -2,21 +2,28 @@
 
 ## Description
 
-`sql-dashboard` is a Developer Dashboard skill that extracts the current DD SQL dashboard into an isolated skill repo.
+`sql-dashboard` is a Developer Dashboard skill that gives users a browser-based SQL workspace inside DD.
 
 ## Value
 
-It gives users a browser-facing SQL workspace they can install as a skill instead of relying on the page being shipped only from DD core.
+It gives developers, operators, and analysts one place to manage connection profiles, write and rerun SQL, browse schema details, and inspect results without leaving Developer Dashboard.
 
 ## Problem It Solves
 
-The DD SQL dashboard exists in the main DD source as a large seeded browser page. This skill packages that same SQL dashboard page into a standalone skill repo so it can be installed, reviewed, versioned, and released independently.
+SQL work often gets split across terminal sessions, ad hoc client tools, copied DSNs, and temporary notes. That makes it harder to keep connection details, query collections, schema browsing, and result handling together in one repeatable workspace.
 
 ## What It Does To Solve It
 
-This skill copies the current DD SQL dashboard page source into `dashboards/index`, preserves the original bookmark content, and ships the supporting skill-local docs that explain what the extracted page does and what database-driver setup the user still needs.
+This skill adds a SQL workspace to DD. It lets the user:
 
-This repo re-proves copy integrity and browser layout smoke coverage. It does not re-run the full DD-core multi-database vendor matrix inside this extraction ticket.
+- create and save connection profiles
+- choose from installed `DBD::*` drivers
+- write and run SQL in the browser
+- save useful SQL snippets into collections
+- browse schema and column metadata
+- inspect query results and shape rendered output through the workspace hooks
+
+This repo proves the shipped skill page still loads and exposes the documented workspace controls. It does not re-run the full multi-database vendor matrix inside this ticket.
 
 ## Developer Dashboard Feature Added
 
@@ -26,8 +33,8 @@ This skill adds a browser page at:
 
 ## What Is Included
 
-- the DD SQL dashboard page source copied into `dashboards/index`
-- the SQL dashboard database support report under `docs/database-support.md`
+- a SQL workspace page at `dashboards/index`
+- a database support report under `docs/database-support.md`
 - Docker-only regression tests for copy integrity and browser layout smoke coverage
 
 ## Installation
@@ -35,7 +42,7 @@ This skill adds a browser page at:
 Install the skill from its repo:
 
 ```bash
-dashboard skills install git@github.com:manif3station/sql-dashboard.git
+dashboard skills install git@github.mf:manif3station/sql-dashboard.git
 ```
 
 For local development in this workspace:
@@ -63,10 +70,12 @@ The page provides:
 - Connection Profiles
 - SQL Workspace
 - Schema Explorer
+- saved SQL collections
+- driver-aware DSN guidance
 
 ## Runtime Dependency Notes
 
-The copied page is a browser workspace. Query execution still depends on DBI and whichever `DBD::*` driver matches the target database.
+This skill is a browser workspace. Query execution depends on `DBI` and whichever `DBD::*` driver matches the target database.
 
 Examples:
 
@@ -81,15 +90,15 @@ dashboard cpan DBD::Oracle
 ## Normal Cases
 
 ```text
-/app/sql-dashboard opens the copied SQL dashboard page
+/app/sql-dashboard opens a SQL workspace with Connection Profiles, SQL Workspace, and Schema Explorer sections
 ```
 
 ```text
-The page shows Connection Profiles, SQL Workspace, and Schema Explorer tabs
+The page lets the user keep saved connection profiles, edit SQL, and browse schema details in one place
 ```
 
 ```text
-The page keeps the original saved Ajax worker names used by the DD SQL dashboard
+The page runs SQL and returns result data through the workspace result area and saved SQL flow
 ```
 
 ## Edge Cases
@@ -99,7 +108,7 @@ If no `DBD::*` drivers are installed, the page still renders but query execution
 ```
 
 ```text
-The database support matrix documented in docs/database-support.md is copied from the DD source and marked as inherited DD-core evidence, not re-proven by this skill repo's smaller extraction gate.
+If a vendor driver needs native client libraries in addition to the Perl module, those host-side pieces must also be installed before that database family will work.
 ```
 
 ```text
@@ -112,3 +121,4 @@ If DD is not running, the browser route will not load until `dashboard restart` 
 - `docs/usage.md`
 - `docs/database-support.md`
 - `docs/changes/2026-04-29-extraction.md`
+- `docs/changes/2026-04-29-documentation-refresh.md`

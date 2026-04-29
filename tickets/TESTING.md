@@ -27,11 +27,9 @@ docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-tes
   - Coverage: `100.0%` statement and `100.0%` subroutine for `lib/SQLDashboard/Asset.pm`
 - Installed DD proof:
   - `dashboard skills install ~/projects/skills/skills/sql-dashboard`
-  - Result: pass, installed `sql-dashboard` at version `0.01`
-  - `dashboard serve --host 127.0.0.1 --port 7890 --foreground`
-  - Result: pass, served the installed skill route
-  - `curl http://127.0.0.1:7890/app/sql-dashboard`
-  - Result: pass, returned the SQL dashboard page with `Connection Profiles`, `SQL Workspace`, `Schema Explorer`, `sql-profile-driver`, and `sql-table-filter`
+  - Result: pass, updated `sql-dashboard` to version `0.02`
+  - `curl -fsS http://127.0.0.1:7890/app/sql-dashboard | rg -n "Connection Profiles|SQL Workspace|Schema Explorer|sql-profile-driver|sql-table-filter"`
+  - Result: pass, returned the SQL dashboard page with the documented workspace controls
 - Cleanup:
   - `docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-test bash -lc 'rm -rf /workspace/skills/sql-dashboard/cover_db'`
   - Result: pass

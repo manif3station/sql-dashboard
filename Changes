@@ -1,5 +1,9 @@
 Revision history for sql-dashboard
 
+0.02 2026-04-29
+    - rewrote the skill documentation to describe the SQL workspace by user-facing function instead of extraction history
+    - refreshed README and docs with practical SQL workspace usage and runtime setup guidance
+
 0.01 2026-04-29
     - created the sql-dashboard skill by extracting the current DD SQL dashboard page into a skill-local dashboard asset
     - added Docker tests for exact-copy integrity, bookmark structure, and browser layout smoke coverage

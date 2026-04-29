@@ -7,18 +7,16 @@ what is already proven in the real browser workflow, what optional drivers a
 user must install, what host-side setup is required for deeper verification,
 and what remains to improve.
 
-## Extracted Skill Note
+## Skill Verification Note
 
-This report was copied from the DD source along with the SQL dashboard page.
-
-For this extracted `sql-dashboard` skill repo:
+For this `sql-dashboard` skill repo:
 
 - the copied browser asset itself was re-verified
 - the copied bookmark structure and saved Ajax worker names were re-verified
 - a Playwright smoke check for the extracted browser layout was re-verified
 
-The full vendor matrix below is inherited DD-core evidence. It was not
-re-executed inside this smaller skill-extraction ticket.
+The full vendor matrix below is inherited support evidence for the shipped SQL
+workspace. It was not re-executed inside this smaller skill ticket.
 
 ## Current Status
 
