@@ -1,5 +1,10 @@
 Revision history for sql-dashboard
 
+0.03 2026-04-29
+    - added Docker-generated Playwright screenshots for the SQL dashboard README
+    - embedded profile, workspace, and schema explorer screenshots into the skill docs
+    - added verification for README screenshot assets and references
+
 0.02 2026-04-29
     - rewrote the skill documentation to describe the SQL workspace by user-facing function instead of extraction history
     - refreshed README and docs with practical SQL workspace usage and runtime setup guidance

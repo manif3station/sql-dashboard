@@ -73,6 +73,20 @@ The page provides:
 - saved SQL collections
 - driver-aware DSN guidance
 
+## Screenshots
+
+Connection Profiles keeps saved database connections, driver selection, and DSN guidance together in one place.
+
+![SQL Dashboard Connection Profiles](docs/images/sql-dashboard-profiles.png)
+
+SQL Workspace is where the user writes SQL, reuses saved statements, and inspects result output.
+
+![SQL Dashboard Workspace](docs/images/sql-dashboard-workspace.png)
+
+Schema Explorer helps the user browse tables and column metadata before writing a query.
+
+![SQL Dashboard Schema Explorer](docs/images/sql-dashboard-schema.png)
+
 ## Runtime Dependency Notes
 
 This skill is a browser workspace. Query execution depends on `DBI` and whichever `DBD::*` driver matches the target database.
@@ -122,3 +136,7 @@ If DD is not running, the browser route will not load until `dashboard restart` 
 - `docs/database-support.md`
 - `docs/changes/2026-04-29-extraction.md`
 - `docs/changes/2026-04-29-documentation-refresh.md`
+- `docs/changes/2026-04-29-readme-screenshots.md`
+- `docs/images/sql-dashboard-profiles.png`
+- `docs/images/sql-dashboard-workspace.png`
+- `docs/images/sql-dashboard-schema.png`

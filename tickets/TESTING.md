@@ -12,6 +12,7 @@
 ```bash
 docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-test bash -lc 'cd /workspace/skills/sql-dashboard && cpanm --quiet --notest --installdeps . && prove -lr t'
 docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-test bash -lc 'cd /workspace/skills/sql-dashboard && cpanm --quiet --notest --installdeps . && cover -delete && HARNESS_PERL_SWITCHES=-MDevel::Cover prove -lr t && cover -report text -select_re "^lib/" -coverage statement -coverage subroutine'
+docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-test bash -lc 'cd /workspace/skills/sql-dashboard && mkdir -p docs/images && perl -Ilib -MSQLDashboard::Asset -e "print SQLDashboard::Asset::static_html()" > /tmp/sql-dashboard-readme.html && SQL_DASHBOARD_SCREENSHOT_HTML=/tmp/sql-dashboard-readme.html SQL_DASHBOARD_SCREENSHOT_DIR=/workspace/skills/sql-dashboard/docs/images node t/generate-readme-screenshots.js'
 ```
 
 ## Latest Verification
@@ -25,11 +26,17 @@ docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-tes
   - `docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-test bash -lc 'cd /workspace/skills/sql-dashboard && cpanm --quiet --notest --installdeps . && cover -delete && HARNESS_PERL_SWITCHES=-MDevel::Cover prove -lr t && cover -report text -select_re "^lib/" -coverage statement -coverage subroutine'`
   - Result: pass
   - Coverage: `100.0%` statement and `100.0%` subroutine for `lib/SQLDashboard/Asset.pm`
+- Screenshot generation:
+  - `docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-test bash -lc 'cd /workspace/skills/sql-dashboard && mkdir -p docs/images && perl -Ilib -MSQLDashboard::Asset -e "print SQLDashboard::Asset::static_html()" > /tmp/sql-dashboard-readme.html && SQL_DASHBOARD_SCREENSHOT_HTML=/tmp/sql-dashboard-readme.html SQL_DASHBOARD_SCREENSHOT_DIR=/workspace/skills/sql-dashboard/docs/images node t/generate-readme-screenshots.js'`
+  - Result: pass
+  - Assets: `docs/images/sql-dashboard-profiles.png`, `docs/images/sql-dashboard-workspace.png`, `docs/images/sql-dashboard-schema.png`
 - Installed DD proof:
-  - `dashboard skills install ~/projects/skills/skills/sql-dashboard`
-  - Result: pass, updated `sql-dashboard` to version `0.02`
   - `curl -fsS http://127.0.0.1:7890/app/sql-dashboard | rg -n "Connection Profiles|SQL Workspace|Schema Explorer|sql-profile-driver|sql-table-filter"`
   - Result: pass, returned the SQL dashboard page with the documented workspace controls
+- Installed DD note:
+  - `dashboard skills install ~/projects/skills/skills/sql-dashboard`
+  - Result: blocked by the current local DD core runtime error `Developer/Dashboard.pm did not return a true value at ~/.developer-dashboard/cli/dd/_dashboard-core line 48`
+  - Scope: unrelated to the `sql-dashboard` repo changes in this ticket
 - Cleanup:
   - `docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-test bash -lc 'rm -rf /workspace/skills/sql-dashboard/cover_db'`
   - Result: pass
