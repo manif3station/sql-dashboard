@@ -1,5 +1,14 @@
 Revision history for sql-dashboard
 
+0.07 2026-04-29
+    - restored compatibility with the current DD 3.24 flat ajax route contract after proving `/ajax/<skill>/...` is not active in the shipped runtime
+    - kept the stronger route-contract and worker-body verification
+
+0.06 2026-04-29
+    - rechecked the DD 3.24 ajax router and proved it still resolves the flat `sql-dashboard-*` ajax file contract
+    - kept the extracted page and ajax worker filenames aligned with that current DD contract
+    - replaced the exact-copy regression with route-contract and worker-body verification
+
 0.05 2026-04-29
     - restored the missing `sql-dashboard` ajax worker files under `dashboards/ajax/` so the extracted skill carries its SQL and schema handlers with the page
     - added Docker verification that the ajax files match the DD source page worker bodies exactly

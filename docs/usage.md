@@ -37,6 +37,8 @@ http://127.0.0.1:7890/app/sql-dashboard
 
 The workspace stays generic: database drivers are optional and user-installed.
 
+Its DD-backed request handlers are routed through the current flat DD ajax contract such as `/ajax/sql-dashboard-profiles-bootstrap?type=json`.
+
 Examples:
 
 ```bash
@@ -58,4 +60,4 @@ dashboard cpan DBD::Oracle
 
 - if no DBI driver is installed yet, the page still opens because the browser asset is separate from the runtime driver setup
 - if a DB vendor needs native client libraries, install those separately before expecting that driver family to work
-- if the shipped page ever changes, the exact-copy regression test will fail
+- if the shipped page or its ajax route contract changes, the route verification and worker-body regression tests will fail
