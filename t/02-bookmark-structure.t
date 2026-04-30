@@ -20,13 +20,13 @@ is( scalar @{ $page->{ajax_blocks} }, 7, 'bookmark keeps all seven saved Ajax wo
 is_deeply(
     [ map { $_->{file} } @{ $page->{ajax_blocks} } ],
     [
-        'sql-dashboard-profiles-bootstrap',
-        'sql-dashboard-profiles-save',
-        'sql-dashboard-profiles-delete',
-        'sql-dashboard-collections-save',
-        'sql-dashboard-collections-delete',
-        'sql-dashboard-execute',
-        'sql-dashboard-schema-browse',
+        'profiles-bootstrap',
+        'profiles-save',
+        'profiles-delete',
+        'collections-save',
+        'collections-delete',
+        'execute',
+        'schema-browse',
     ],
     'bookmark keeps the expected saved Ajax worker file names',
 );

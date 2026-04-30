@@ -226,13 +226,13 @@ HTML: <style>
     result_info: 'Select a profile and run SQL.'
   };
   var endpointFallbacks = {
-    'profiles.bootstrap': '/ajax/sql-dashboard-profiles-bootstrap?type=json',
-    'profiles.save': '/ajax/sql-dashboard-profiles-save?type=json',
-    'profiles.delete': '/ajax/sql-dashboard-profiles-delete?type=json',
-    'collections.save': '/ajax/sql-dashboard-collections-save?type=json',
-    'collections.delete': '/ajax/sql-dashboard-collections-delete?type=json',
-    'sql.execute': '/ajax/sql-dashboard-execute?type=json',
-    'schema.browse': '/ajax/sql-dashboard-schema-browse?type=json'
+    'profiles.bootstrap': '/ajax/sql-dashboard/profiles-bootstrap?type=json',
+    'profiles.save': '/ajax/sql-dashboard/profiles-save?type=json',
+    'profiles.delete': '/ajax/sql-dashboard/profiles-delete?type=json',
+    'collections.save': '/ajax/sql-dashboard/collections-save?type=json',
+    'collections.delete': '/ajax/sql-dashboard/collections-delete?type=json',
+    'sql.execute': '/ajax/sql-dashboard/execute?type=json',
+    'schema.browse': '/ajax/sql-dashboard/schema-browse?type=json'
   };
 
   function byId(id) {
@@ -1305,7 +1305,7 @@ HTML: <style>
 }());
 </script>
 :--------------------------------------------------------------------------------:
-CODE1: Ajax jvar => 'configs.profiles.bootstrap', type => 'json', singleton => 'SQL_DASHBOARD_PROFILES_BOOTSTRAP', file => 'sql-dashboard-profiles-bootstrap', code => q{
+CODE1: Ajax jvar => 'configs.profiles.bootstrap', type => 'json', singleton => 'SQL_DASHBOARD_PROFILES_BOOTSTRAP', file => 'profiles-bootstrap', code => q{
 use Developer::Dashboard::Folder ();
 use Developer::Dashboard::JSON qw(json_encode json_decode);
 use File::Path qw(make_path);
@@ -1669,7 +1669,7 @@ print j $payload;
 
 };
 :--------------------------------------------------------------------------------:
-CODE2: Ajax jvar => 'configs.profiles.save', type => 'json', singleton => 'SQL_DASHBOARD_PROFILES_SAVE', file => 'sql-dashboard-profiles-save', code => q{
+CODE2: Ajax jvar => 'configs.profiles.save', type => 'json', singleton => 'SQL_DASHBOARD_PROFILES_SAVE', file => 'profiles-save', code => q{
 use Developer::Dashboard::Folder ();
 use Developer::Dashboard::JSON qw(json_encode json_decode);
 use File::Path qw(make_path);
@@ -2034,7 +2034,7 @@ print j $payload;
 
 };
 :--------------------------------------------------------------------------------:
-CODE3: Ajax jvar => 'configs.profiles.delete', type => 'json', singleton => 'SQL_DASHBOARD_PROFILES_DELETE', file => 'sql-dashboard-profiles-delete', code => q{
+CODE3: Ajax jvar => 'configs.profiles.delete', type => 'json', singleton => 'SQL_DASHBOARD_PROFILES_DELETE', file => 'profiles-delete', code => q{
 use Developer::Dashboard::Folder ();
 use Developer::Dashboard::JSON qw(json_encode json_decode);
 use File::Path qw(make_path);
@@ -2392,7 +2392,7 @@ print j $payload;
 
 };
 :--------------------------------------------------------------------------------:
-CODE4: Ajax jvar => 'configs.collections.save', type => 'json', singleton => 'SQL_DASHBOARD_COLLECTIONS_SAVE', file => 'sql-dashboard-collections-save', code => q{
+CODE4: Ajax jvar => 'configs.collections.save', type => 'json', singleton => 'SQL_DASHBOARD_COLLECTIONS_SAVE', file => 'collections-save', code => q{
 use Developer::Dashboard::Folder ();
 use Developer::Dashboard::JSON qw(json_encode json_decode);
 use File::Path qw(make_path);
@@ -2757,7 +2757,7 @@ print j $payload;
 
 };
 :--------------------------------------------------------------------------------:
-CODE5: Ajax jvar => 'configs.collections.delete', type => 'json', singleton => 'SQL_DASHBOARD_COLLECTIONS_DELETE', file => 'sql-dashboard-collections-delete', code => q{
+CODE5: Ajax jvar => 'configs.collections.delete', type => 'json', singleton => 'SQL_DASHBOARD_COLLECTIONS_DELETE', file => 'collections-delete', code => q{
 use Developer::Dashboard::Folder ();
 use Developer::Dashboard::JSON qw(json_encode json_decode);
 use File::Path qw(make_path);
@@ -3115,7 +3115,7 @@ print j $payload;
 
 };
 :--------------------------------------------------------------------------------:
-CODE6: Ajax jvar => 'configs.sql.execute', type => 'json', singleton => 'SQL_DASHBOARD_EXECUTE', file => 'sql-dashboard-execute', code => q{
+CODE6: Ajax jvar => 'configs.sql.execute', type => 'json', singleton => 'SQL_DASHBOARD_EXECUTE', file => 'execute', code => q{
 use Developer::Dashboard::Folder ();
 use Developer::Dashboard::JSON qw(json_encode json_decode);
 use File::Path qw(make_path);
@@ -3737,7 +3737,7 @@ print j $payload;
 
 };
 :--------------------------------------------------------------------------------:
-CODE7: Ajax jvar => 'configs.schema.browse', type => 'json', singleton => 'SQL_DASHBOARD_SCHEMA_BROWSE', file => 'sql-dashboard-schema-browse', code => q{
+CODE7: Ajax jvar => 'configs.schema.browse', type => 'json', singleton => 'SQL_DASHBOARD_SCHEMA_BROWSE', file => 'schema-browse', code => q{
 use Developer::Dashboard::Folder ();
 use Developer::Dashboard::JSON qw(json_encode json_decode);
 use File::Path qw(make_path);

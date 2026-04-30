@@ -31,13 +31,13 @@ sub normalize_body {
 
 my $content = slurp($source);
 my @files = qw(
-  sql-dashboard-profiles-bootstrap
-  sql-dashboard-profiles-save
-  sql-dashboard-profiles-delete
-  sql-dashboard-collections-save
-  sql-dashboard-collections-delete
-  sql-dashboard-execute
-  sql-dashboard-schema-browse
+  profiles-bootstrap
+  profiles-save
+  profiles-delete
+  collections-save
+  collections-delete
+  execute
+  schema-browse
 );
 
 for my $file (@files) {

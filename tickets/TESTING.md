@@ -33,15 +33,13 @@ docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-tes
   - Backing demo: `DBD::SQLite` with a dummy SQLite catalog created at runtime inside Docker
 - Installed DD proof:
   - `dashboard skills install ~/projects/skills/skills/sql-dashboard`
-  - Result: pass, updated `sql-dashboard` to version `0.07`
+  - Result: pass, updated `sql-dashboard` to version `0.08`
   - `dashboard restart --port 7890`
   - Result: pass, DD web returned on `127.0.0.1:7890`
   - `curl -fsS http://127.0.0.1:7890/app/sql-dashboard | rg -n "Connection Profiles|SQL Workspace|Schema Explorer|sql-profile-driver|sql-table-filter"`
   - Result: pass, returned the SQL dashboard page with the documented workspace controls
-  - `curl -fsS http://127.0.0.1:7890/ajax/sql-dashboard-profiles-bootstrap?type=json`
-  - Result: pass, returned the bootstrap payload JSON from the current DD flat ajax route
-  - `curl -i -s http://127.0.0.1:7890/ajax/sql-dashboard/profiles-bootstrap?type=json | sed -n '1,12p'`
-  - Result: pass, proved the skill-prefixed path is still `404 Not Found` in the shipped DD 3.24 runtime
+  - `curl -fsS http://127.0.0.1:7890/ajax/sql-dashboard/profiles-bootstrap?type=json`
+  - Result: pass, returned the bootstrap payload JSON from the skill-prefixed ajax route
 - Cleanup:
   - `docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-test bash -lc 'rm -rf /workspace/skills/sql-dashboard/cover_db'`
   - Result: pass

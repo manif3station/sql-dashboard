@@ -35,7 +35,7 @@ This skill adds a browser page at:
 
 - a SQL workspace page at `dashboards/index`
 - the matching ajax request handlers under `dashboards/ajax/`
-- DD-backed ajax routing through flat handler names such as `/ajax/sql-dashboard-profiles-bootstrap?type=json`
+- DD skill-prefixed ajax routing through `/ajax/sql-dashboard/...`
 - a database support report under `docs/database-support.md`
 - Docker-only regression tests for copy integrity and browser layout smoke coverage
 
@@ -118,7 +118,11 @@ The page runs SQL and returns result data through the workspace result area and 
 ```
 
 ```text
-The browser workspace resolves its DD-backed request handlers through the current DD flat ajax contract such as /ajax/sql-dashboard-profiles-bootstrap?type=json
+The browser workspace resolves its DD-backed request handlers through /ajax/sql-dashboard/... so the page and saved workers stay namespaced to this skill
+```
+
+```text
+DD uses the same skill-prefixed route family for app and static assets, so browser-facing skill assets follow /app/<skill>/..., /ajax/<skill>/..., and when present /js/<skill>/..., /css/<skill>/..., and /others/<skill>/...
 ```
 
 ## Edge Cases
@@ -145,7 +149,7 @@ If DD is not running, the browser route will not load until `dashboard restart` 
 - `docs/changes/2026-04-29-readme-screenshots.md`
 - `docs/changes/2026-04-29-sqlite-demo-screenshots.md`
 - `docs/changes/2026-04-29-ajax-workers-restored.md`
-- `docs/changes/2026-04-29-ajax-route-contract-proof.md`
+- `docs/changes/2026-04-30-skill-prefixed-ajax-routes.md`
 - `docs/images/sql-dashboard-profiles.png`
 - `docs/images/sql-dashboard-workspace.png`
 - `docs/images/sql-dashboard-schema.png`

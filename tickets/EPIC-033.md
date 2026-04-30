@@ -2,8 +2,8 @@
 
 ## Title
 
-Recheck the `sql-dashboard` ajax route contract.
+Move `sql-dashboard` to skill-prefixed ajax routes.
 
 ## Goal
 
-Recheck the `sql-dashboard` ajax route contract against the current DD runtime and keep the extracted skill aligned with the route shape DD 3.24 actually serves.
+Rename the `sql-dashboard` saved ajax workers to skill-local names and update the copied page bindings to call `/ajax/sql-dashboard/...`.

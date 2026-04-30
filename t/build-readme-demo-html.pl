@@ -135,11 +135,11 @@ window.fetch = async function(url, options) {
   var fixture = window.SQL_DASHBOARD_DEMO_FIXTURE || {};
   var payload = {};
 
-  if (String(url).indexOf('sql-dashboard-profiles-bootstrap') > -1) {
+  if (String(url).indexOf('/ajax/sql-dashboard/profiles-bootstrap') > -1) {
     payload = fixture.bootstrap || {};
-  } else if (String(url).indexOf('sql-dashboard-execute') > -1) {
+  } else if (String(url).indexOf('/ajax/sql-dashboard/execute') > -1) {
     payload = fixture.execute || {};
-  } else if (String(url).indexOf('sql-dashboard-schema-browse') > -1) {
+  } else if (String(url).indexOf('/ajax/sql-dashboard/schema-browse') > -1) {
     var body = String(options.body || '');
     var params = new URLSearchParams(body);
     var settings = {};

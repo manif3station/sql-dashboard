@@ -37,7 +37,15 @@ http://127.0.0.1:7890/app/sql-dashboard
 
 The workspace stays generic: database drivers are optional and user-installed.
 
-Its DD-backed request handlers are routed through the current flat DD ajax contract such as `/ajax/sql-dashboard-profiles-bootstrap?type=json`.
+Its DD-backed request handlers are routed under `/ajax/sql-dashboard/...`, which keeps the browser page and saved ajax workers namespaced to this skill.
+
+DD uses the same skill-prefixed route family for browser-facing skill assets in general:
+
+- `/app/<skill>/...`
+- `/ajax/<skill>/...`
+- `/js/<skill>/...`
+- `/css/<skill>/...`
+- `/others/<skill>/...`
 
 Examples:
 

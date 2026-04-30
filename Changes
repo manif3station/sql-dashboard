@@ -1,5 +1,10 @@
 Revision history for sql-dashboard
 
+0.08 2026-04-30
+    - renamed the saved ajax workers to local names under `dashboards/ajax/`
+    - aligned the extracted page with DD's `/ajax/sql-dashboard/...` skill-prefixed ajax route contract
+    - kept the stronger route-contract and worker-body verification
+
 0.07 2026-04-29
     - restored compatibility with the current DD 3.24 flat ajax route contract after proving `/ajax/<skill>/...` is not active in the shipped runtime
     - kept the stronger route-contract and worker-body verification
