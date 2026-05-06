@@ -43,3 +43,14 @@ docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-tes
 - Cleanup:
   - `docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-test bash -lc 'rm -rf /workspace/skills/sql-dashboard/cover_db'`
   - Result: pass
+
+## Latest Verification For `DD-076`
+
+- Functional test:
+  - `docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-test bash -lc 'cd /workspace/skills/sql-dashboard && cpanm --quiet --notest DBD::SQLite && cpanm --quiet --notest --installdeps . && prove -lr t'`
+  - Result: pass
+  - Test count: `Files=8, Tests=58`
+- Coverage test:
+  - `docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-test bash -lc 'cd /workspace/skills/sql-dashboard && cpanm --quiet --notest DBD::SQLite && cpanm --quiet --notest --installdeps . && cover -delete && HARNESS_PERL_SWITCHES=-MDevel::Cover prove -lr t && cover -report text -select_re "^lib/" -coverage statement -coverage subroutine'`
+  - Result: pass
+  - Coverage: `100.0%` statement and `100.0%` subroutine for `lib/SQLDashboard/Asset.pm`
